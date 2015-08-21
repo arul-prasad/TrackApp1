@@ -1,0 +1,45 @@
+<ion-view view-title="SMS">
+  <ion-header-bar>
+    <h1 class="title">SMS Parser</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="doParse()">Parse</button>
+    </div>
+  </ion-header-bar>
+    <ion-content>
+    <form ng-submit="doParse()">
+      <div class="list">
+        <label class="item item-input item-floating-label">
+          <span class="input-label">Sender</span>
+          <input type="text" ng-model="smsData.sender" placeholder="AD-XXXXXX">
+        </label>
+        <label class="item item-input item-floating-label">
+          <span class="input-label">SMS</span>
+          <input type="text" ng-model="smsData.msg" placeholder="Transaction SMS">
+        </label>
+        <label class="item">
+          <button class="button button-block button-positive" type="submit">Parse</button>
+        </label>
+        <label class="item item-input item-floating-label">
+          <span class="input-label">Error</span>
+          <input type="text" ng-model="error">
+        </label>
+        <label class="item item-input ">
+          <span class="input-label">Account</span>
+          <input type="text" ng-model="tranData.account" placeholder="XXXX-XXXX-XXXX-XXXX">
+        </label>
+        <label class="item item-input ">
+          <span class="input-label">Date</span>
+          <input type="text" ng-model="tranData.date" placeholder="21-Jul-2010">
+        </label>
+        <label class="item item-input ">
+          <span class="input-label">Amount</span>
+          <input type="text" ng-model="tranData.amount" placeholder="INR 100.00">
+        </label>
+        <label class="item item-input ">
+          <span class="input-label">Merchant</span>
+          <input type="text" ng-model="tranData.merchant" placeholder="disney world">
+        </label>
+      </div>
+    </form>
+  </ion-content>
+</ion-view>
