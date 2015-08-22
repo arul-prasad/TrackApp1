@@ -1,0 +1,73 @@
+//insert an expense
+
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 2000.00 using Credit Card 4xxx1005 is made at HOTEL Anand on 12-JUL-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );
+
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 30000.00 using Credit Card 4xxx1005 is made at HOTEL Anand on 12-JUL-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );
+
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 6000.00 using Credit Card 4xxx1006 is made at HOTEL Anand on 12-JUL-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );
+
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 70000.00 using Credit Card 4xxx1006 is made at HOTEL Anand on 12-JUL-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );
+
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 6000.00 using Credit Card 4xxx1005 is made at HOTEL Anand on 12-JUL-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );
+
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 500.00 using Credit Card 4xxx1005 is made at HOTEL Anand1 on 12-JUL-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );        
+        
+
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 500.00 using Credit Card 4xxx1006 is made at HOTEL Anand1 on 12-JUL-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );        
+
+
+
+// group by account
+                  
+config.db(["_design/expenseTrackNew", "_view"])(["expenseTrackByAccount", {group_level : 1}], function(err, expenseTrackListView) {
+                  console.log("expenseTrackLists",expenseTrackListView);
+            });
+          
+// group by account,merchant                  
+config.db(["_design/expenseTrackNew", "_view"])(["expenseTrackByAccount", {group_level : 2}], function(err, expenseTrackListView) {
+                console.log("expenseTrackLists",expenseTrackListView);
+          });
+
+config.db(["_design/expenseTrackNew", "_view"])(["expenseTrackByDate"], function(err, expenseTrackListView) {
+                console.log("expenseTrackLists",expenseTrackListView);
+          });
+
+//delete DB.
+config.db.del(function() { console.log(arguments)
+          });
+          
+//sms parser test
+
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 500.00 using Credit Card 4xxx1006 is made at HOTEL Anand1 on 12-JUL-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+console.log(tranData);
+});
+            

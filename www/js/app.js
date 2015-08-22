@@ -28,6 +28,29 @@ angular.module('starter', ['ionic', 'starter.controllers'])
                             emit(doc.date, doc);
                         }
                     }.toString()
+                },
+                
+                expenseTrackByAccount : {
+                    map : function(doc) {
+                        emit([doc.account,doc.merchant], { account:  doc.account, merchant: doc.merchant, amount: doc.amount.value, currency : doc.amount.currency});
+                    }.toString(),
+                    
+                    reduce : function(keys,values,rereduce) {
+                         var response = {"account" : 0, "merchant": 0, "sum" : 0 };
+                          for(i=0; i<values.length; i++)
+                          {
+                             response.sum = response.sum + values[i].amount;
+                             response.merchant = values[i].merchant;
+                             response.account = values[i].account;
+                          }
+                         return response;
+                    }.toString()
+                }, 
+                
+                expenseTrackByDate : {
+                    map : function(doc) {
+                        emit(new Date(JSON.parse(doc.date)), doc);
+                    }.toString()
                 }
             }
         }, function(){
