@@ -1,0 +1,46 @@
+angular.module('starter.controllers', [])
+
+.controller('DashCtrl', function($scope, $ionicPopup, SmsPlugin, CBLite) {
+	$scope.smsList=[];
+	$scope.NoOfsmss=0;
+	$scope.smss ='suport';
+	$scope.columns=SmsPlugin.getColumns();
+	
+	var successCallbackReception = function(data){
+		var alertPopup = $ionicPopup.alert({
+            title: 'startReception succ!',
+            template: data
+          });
+	}
+	var successCallbackGetSms = function(data){
+		$scope.smsList=[];
+		if(Array.isArray(data)){
+			for (var i = 0; i < data.length; i++) {
+				$scope.smsList.push(data[i])
+			}
+    	}
+		SmsPlugin.startReception(successCallbackReception, failureCallback);
+	}
+	
+	var successCallbackSmsCount = function(data){
+		$scope.NoOfsmss = data;
+		SmsPlugin.getAllSms(data,successCallbackGetSms, failureCallback);
+	}
+	var successCallbackSupport = function(data){
+		$scope.smss  = data;
+		SmsPlugin.getAllSmsCount(successCallbackSmsCount, failureCallback);
+	}
+	var failureCallback = function(err) {
+        var alertPopup = $ionicPopup.alert({
+            title: 'Support Failed!',
+            template: err
+          });
+     }
+	
+	$scope.readSms = function() {
+		SmsPlugin.isSupported(successCallbackSupport, failureCallback);
+		
+	};
+	
+	
+});

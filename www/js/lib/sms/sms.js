@@ -1,4 +1,4 @@
-var smsReader = (function(smsReader) {
+var smsReader = (function (smsReader) {
 
   var getFoundMsgIndexes = function(tranSmsSpec,tranSms) {
     var mapIndexOfMsg = function(msgTemplate) {
@@ -34,16 +34,40 @@ var smsReader = (function(smsReader) {
   };
   
   var toTranData = function(tranSmsSpec,tranSms,extractDatas) {
-    var reduceToTranData = function(tranData,extractData, index) {
+    
+
+      
+  var convertTranData = function(extractData,index) {
+    if(extractData && tranSmsSpec.attrTypes && tranSmsSpec.attrTypes[index]) {
+        var attrConverter = smsReader.getConverter(tranSmsSpec.attrTypes[index]);
+        if(attrConverter) {
+           return attrConverter(extractData);
+        } else {
+           return extractData;
+        }
+    } else {
+        return extractData;
+    }
+  };
+      
+  var reduceToTranData = function(tranData,extractData, index) {
      if(extractData && tranSmsSpec.attributtes[index]) {
         tranData[tranSmsSpec.attributtes[index]] = extractData;
      }
      return tranData; 
-    };
-    var tranData = _.reduce(extractDatas,reduceToTranData,{});
-    tranData.accType = tranSmsSpec.type;
-    return tranData
-  }
+  };
+      
+  var extractDatasConverted = _.map(extractDatas,convertTranData);
+      
+    
+  var tranData = _.reduce(extractDatasConverted,reduceToTranData,{});
+      
+  tranData.accType = tranSmsSpec.type;
+  return tranData
+  
+  };
+  
+  
   
   smsReader.getMatchedTranSmsSpec = function(tranSms){
       var tranSmsSpecs = _.map(this.getTranSmsSpecs(tranSms), function(tranSmsSpec) {
@@ -65,7 +89,7 @@ var smsReader = (function(smsReader) {
     } else {
       throw "template doesn't match the sms for the given msg: check the available config:" + tranSms;
     }
-  };
+  };                                                    
   
   smsReader.parse = function(tranSms,onSuccess,onError){
     try{

@@ -9,9 +9,6 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
       
-    var coax = require("coax"),
-	appDbName = "sms";
-      
     function setupDb(db, cb) {
         db.get(function(err, res, body){
             console.log(JSON.stringify(["before create db put", err, res, body]))
@@ -21,31 +18,61 @@ angular.module('starter', ['ionic', 'starter.controllers'])
         })
     };
       
-    if (cblite) {
-
+    function setupViews(db,cb) {
+        var design = "_design/expenseTrackNew"
+        db.put(design, {
+            views : {
+                expenseTrackListsNew : {
+                    map : function(doc) {
+                        if (doc.trackType == "expense" && doc.date && doc.merchant && doc.amount) {
+                            emit(doc.date, doc);
+                        }
+                    }.toString()
+                }
+            }
+        }, function(){
+            cb(false, db([design, "_view"]))
+        })   
+    };
+      
+    
+    if (window.cblite) {
         cblite.getURL(function(err, url) {
             if (err) {
                 console.log('db not initialized');
             } else {
+            
                 window.server = coax(url);
                 var db = coax([url, appDbName]);
-                var setUpDbCb = function(err, info) {
+                
+                setupDb(db, function(err, info) {
                     if (err) {
                         console.log('err')
                     } else {
-                        window.config = {
-                            db: db,
-                            s: coax(url)
-                        };
+                        setupViews(db, function(err, views) {
+                            if (err) {
+                                console.log('err views')
+                            } else {
+                                console.log('views success');
+                                window.config = {
+                                db: db,
+                                s: coax(url),
+                                views : views
+                                };
+                                return config;
+                            }
+                        });
                     }
-                };
-                setupDb(db, setUpDbCb);
+                });
             }
         });
     } else {
-        console.log('cblite not intilized');
+        console.log('cblite pluign not intilized');
     }
-
+  
+    var coax = require("coax"),
+	appDbName = "sms";
+      
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if (window.cordova && window.cordova.plugins.Keyboard) {

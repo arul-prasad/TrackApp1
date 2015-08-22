@@ -41,7 +41,21 @@ angular.module('starter.controllers', [])
   };
 })
 
-.controller('PlaylistsCtrl', function($scope) {
+.controller('PlaylistsCtrl', function($scope,$timeout) {
+ 
+  $scope.$on('$ionicView.enter', function(e) {
+    console.log("inside play lists ctrl");
+    $timeout(function() {
+      console.log("inside time out");
+      if(window.config) {  
+          config.views(["expenseTrackListsNew" , {descending : true}], function(err, expenseTrackListView) {
+                console.log("expenseTrackListsNew",expenseTrackListView);
+          });
+      }
+    },2000);  
+  });
+
+  
   $scope.playlists = [
     { title: 'Reggae', id: 1 },
     { title: 'Chill', id: 2 },
@@ -66,14 +80,15 @@ angular.module('starter.controllers', [])
       
     var doc = { desc : "test", amount : 1000 };
     doc.type = "expense"
-    config.db.post(doc, function(err, ok) {
-        console.log("inserted successfully");
-    });
    
     smsReader.parse($scope.smsData, 
       function(tranData) { 
         console.log("after parse",tranData );
         $scope.tranData = tranData;
+        tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });
       } , 
       function(e) {
         console.log("error while parse ",e);
@@ -82,3 +97,4 @@ angular.module('starter.controllers', [])
       });
   };
 });
+
