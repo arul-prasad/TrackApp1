@@ -7,6 +7,7 @@ var smsReader = (function(smsReader) {
         bank : "ICICI",
         type : "CREDIT",
         msgTemplates : ["Tranx of","using Credit Card", "is made at", "on", "Avbl Cr lmt:", "Total Cr lmt:"],
+        attrTypes : [ "INR" ,"cardnumber","alphanumeric","DATE","INR",""],
         attributtes : ["amount", "account","merchant", "date","availCrLimit","totalCrLimit"],
         charsToRemove : ["","","",".",",","."]
     };
