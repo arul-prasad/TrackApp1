@@ -25,7 +25,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
                 expenseTrackListsNew : {
                     map : function(doc) {
                         if (doc.trackType == "expense" && doc.date && doc.merchant && doc.amount) {
-                            emit(doc.date, doc);
+                            emit([doc.date.year,doc.date.month,doc.date.date] , doc);
                         }
                     }.toString()
                 },
@@ -49,7 +49,19 @@ angular.module('starter', ['ionic', 'starter.controllers'])
                 
                 expenseTrackByDate : {
                     map : function(doc) {
-                        emit(new Date(JSON.parse(doc.date)), doc);
+                        emit([doc.date.year,doc.date.month,doc.date.date] , doc);
+                    }.toString(), 
+                    
+                    reduce : function(keys,values,rereduce) {
+                        var response = { "totalExpenses" : 0 };
+                        for(i=0; i<values.length; i++)
+                        {
+                         response.totalExpenses = response.totalExpenses + values[i].amount.value;
+                         response.year = values[i].date.year;
+                         response.month = values[i].date.month;
+                         response.date = values[i].date.date;
+                        }
+                        return response;
                     }.toString()
                 }
             }

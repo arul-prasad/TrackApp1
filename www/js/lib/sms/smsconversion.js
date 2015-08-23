@@ -30,7 +30,7 @@ var smsReader = (function(smsReader) {
  var toDate = function(dateValue) {
      var date = dateutil.parse(dateValue);
      if(date && date.toString() !== "Invalid Date") {
-         return date;
+         return { value : date , date: date.getDate(), month : date.getMonth() + 1, year : date.getFullYear(), hour : date.getHours(), min : date.getMinutes(), sec : date.getSeconds(), ms : date.getMilliseconds() };
      } else {
          return dateValue;
      }

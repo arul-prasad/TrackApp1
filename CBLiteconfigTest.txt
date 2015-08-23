@@ -44,6 +44,52 @@ smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
         });}, function(err) { console.log(err); } );        
 
 
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 250.00 using Credit Card 4xxx1006 is made at HOTEL Anand1 on 10-JUL-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );
+        
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 1500.00 using Credit Card 4xxx1006 is made at HOTEL Anand1 on 10-JUN-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );                
+
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 300.00 using Credit Card 4xxx1006 is made at HOTEL Anand1 on 10-AUG-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );        
+
+
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 250.00 using Credit Card 4xxx1006 is made at HOTEL Anand1 on 10-JUL-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );
+        
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 1500.00 using Credit Card 4xxx1006 is made at HOTEL Anand1 on 10-JUN-14. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );                
+
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 300.00 using Credit Card 4xxx1006 is made at HOTEL Anand1 on 10-AUG-14. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+smsReader.parse(tranCCSms, function(tranData) {tranData.trackType = "expense";
+        config.db.post(tranData, function(err, ok) {
+            console.log("inserted successfully");
+        });}, function(err) { console.log(err); } );        
+
+
+
+// lista ll expense
+
+config.db(["_design/expenseTrackNew", "_view"])(["expenseTrackListsNew", {descending : true}], function(err, expenseTrackListView) {
+                  console.log("expenseTrackLists",expenseTrackListView);
+            });
+
+
 
 // group by account
                   
@@ -56,9 +102,16 @@ config.db(["_design/expenseTrackNew", "_view"])(["expenseTrackByAccount", {group
                 console.log("expenseTrackLists",expenseTrackListView);
           });
 
-config.db(["_design/expenseTrackNew", "_view"])(["expenseTrackByDate"], function(err, expenseTrackListView) {
+// group by year,month
+config.db(["_design/expenseTrackNew", "_view"])(["expenseTrackByDate",{group_level : 2}], function(err, expenseTrackListView) {
                 console.log("expenseTrackLists",expenseTrackListView);
           });
+
+// group by year
+config.db(["_design/expenseTrackNew", "_view"])(["expenseTrackByDate", {group_level : 2}], function(err, expenseTrackListView) {
+                console.log("expenseTrackLists",expenseTrackListView);
+          });
+
 
 //delete DB.
 config.db.del(function() { console.log(arguments)
