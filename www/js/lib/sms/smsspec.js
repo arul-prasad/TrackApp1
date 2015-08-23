@@ -17,7 +17,7 @@ var smsReader = (function(smsReader) {
         type : "DEBIT-ECS",
         msgTemplates : ["Dear Customer, Your Ac","is debited with", "on", "Info.ECS*","Your Total Avbl. Bal is"],
         attributtes : ["account", "amount","date", "merchant", "totalAvailable"],
-        attrTypes : [ "alphanumeric", "INR", "DDMON","alphanumeric","INR"],
+        attrTypes : [ "alphanumeric", "INR", "DDMM","alphanumeric","INR"],
         charsToRemove : ["","",".",".","."]
     };
       
@@ -26,7 +26,7 @@ var smsReader = (function(smsReader) {
         type : "DEBIT-BILL",
         msgTemplates : ["Dear Customer, Your Ac","is debited with", "on", "Info.BIL*","Your Total Avbl. Bal is"],
         attributtes : ["account", "amount","date", "merchant", "totalAvailable"],
-        attrTypes : [ "alphanumeric", "INR", "DDMON","alphanumeric","INR"],
+        attrTypes : [ "alphanumeric", "INR", "DDMM","alphanumeric","INR"],
         charsToRemove : ["","",".",".","."]
     };
     
@@ -38,12 +38,21 @@ var smsReader = (function(smsReader) {
         attrTypes : [ "INR" ,"DDMON","alphanumeric","INR"],
         charsToRemove : ["",".","",""]
     };
-    
+
+    var drCardAtmWithdrawSpec = {
+        bank : "ICICI",
+        type : "DEBIT-CASH",
+        msgTemplates : ["Your Ac", "is debited with","NFS*CASH WDL*", "Avbl Bal", "To bank on phone with iMobile, click mobile.icicibank.com/dl"],
+        attributtes : ["account", "amount","date", "netAvailable", "others"],
+        attrTypes : [ "alphanumeric" ,"INR","DDMMYY","INR", "alphanumeric"],
+        charsToRemove : ["",".",".",""]
+    };
       
     smsSpecs.push(crCardTranSmsSpec);
     smsSpecs.push(drEcsTranSmsSpec);
     smsSpecs.push(drBillTranSmsSpec);
     smsSpecs.push(drCardTranSmsSpec);
+    smsSpecs.push(drCardAtmWithdrawSpec);
     return smsSpecs;   
   };
     
@@ -79,4 +88,4 @@ var smsReader = (function(smsReader) {
 
   return smsReader;
   
-}(smsReader || {}));
+}(smsReader || {})); 
