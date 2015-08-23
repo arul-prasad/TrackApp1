@@ -7,9 +7,27 @@ var smsReader = (function(smsReader) {
         bank : "ICICI",
         type : "CREDIT",
         msgTemplates : ["Tranx of","using Credit Card", "is made at", "on", "Avbl Cr lmt:", "Total Cr lmt:"],
-        attrTypes : [ "INR" ,"cardnumber","alphanumeric","DATE","INR",""],
         attributtes : ["amount", "account","merchant", "date","availCrLimit","totalCrLimit"],
+        attrTypes : [ "INR" ,"cardnumber","alphanumeric","DATE","INR",""],
         charsToRemove : ["","","",".",",","."]
+    };
+    
+    var drEcsTranSmsSpec = {
+        bank : "ICICI",
+        type : "DEBIT-ECS",
+        msgTemplates : ["Dear Customer, Your Ac","is debited with", "on", "Info.ECS*","Your Total Avbl. Bal is"],
+        attributtes : ["account", "amount","date", "merchant", "totalAvailable"],
+        attrTypes : [ "alphanumeric", "INR", "DDMON","alphanumeric","INR"],
+        charsToRemove : ["","",".",".","."]
+    };
+      
+    var drBillTranSmsSpec = {
+        bank : "ICICI",
+        type : "DEBIT-BILL",
+        msgTemplates : ["Dear Customer, Your Ac","is debited with", "on", "Info.BIL*","Your Total Avbl. Bal is"],
+        attributtes : ["account", "amount","date", "merchant", "totalAvailable"],
+        attrTypes : [ "alphanumeric", "INR", "DDMON","alphanumeric","INR"],
+        charsToRemove : ["","",".",".","."]
     };
     
     var drCardTranSmsSpec = {
@@ -17,21 +35,15 @@ var smsReader = (function(smsReader) {
         type : "DEBIT",
         msgTemplates : ["Dear Customer, You have made a Debit Card purchase of","on", "Info.", "Your Net Available Balance is"],
         attributtes : ["amount", "date","merchant", "netAvailable"],
+        attrTypes : [ "INR" ,"DDMON","alphanumeric","INR"],
         charsToRemove : ["",".","",""]
     };
     
-    var drEcsTranSmsSpec = {
-        bank : "ICICI",
-        type : "DEBIT",
-        tranType : "ECS",
-        msgTemplates : ["Dear Customer, Your Ac","is debited with", "on", "Info.ECS*","Your Total Avbl. Bal is"],
-        attributtes : ["account", "amount","date", "merchant", "totalAvailable"],
-        charsToRemove : ["","",".",".","."]
-    };
       
     smsSpecs.push(crCardTranSmsSpec);
-    smsSpecs.push(drCardTranSmsSpec);
     smsSpecs.push(drEcsTranSmsSpec);
+    smsSpecs.push(drBillTranSmsSpec);
+    smsSpecs.push(drCardTranSmsSpec);
     return smsSpecs;   
   };
     
@@ -67,4 +79,4 @@ var smsReader = (function(smsReader) {
 
   return smsReader;
   
-}(smsReader || {})); 
+}(smsReader || {}));

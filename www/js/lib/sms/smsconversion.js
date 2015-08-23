@@ -1,54 +1,82 @@
 var smsReader = (function(smsReader) {
- 
- var replaceAll = function(find, replace, str) {
-  return str.replace(new RegExp(find, 'g'), replace);
- };
- 
- var numExp = /^[0-9]+$/;
- var toInrCurrency = function(currency, currencyData) {
-  if(currencyData && currencyData.indexOf(currency) != -1) {
-      var currencyParts =  currencyData.split(currency);
-      if(currencyParts.length == 2) {
-         var amountStr = replaceAll(",","",currencyParts[1].trim());
-         var amountAsNum = replaceAll("\\.","",amountStr);
-         if(numExp.test(amountAsNum)){
-            var currencyAmount = parseFloat(amountStr);
-            return { currency : currency, value : currencyAmount }
-         } else {
-            return currencyData;      
-         }
-       } else {
-         return currencyData;
-       }  
-  } else {
-    return currencyData;
-  }
- };
+
+  var getSmsSpecs = function() {
+    var smsSpecs = [];
     
- var toDate1 = function(dateValue) { return dateValue; }
- 
- var toDate = function(dateValue) {
-     var date = dateutil.parse(dateValue);
-     if(date && date.toString() !== "Invalid Date") {
-         return { value : date , date: date.getDate(), month : date.getMonth() + 1, year : date.getFullYear(), hour : date.getHours(), min : date.getMinutes(), sec : date.getSeconds(), ms : date.getMilliseconds() };
-     } else {
-         return dateValue;
-     }
- };
+    var crCardTranSmsSpec = {
+        bank : "ICICI",
+        type : "CREDIT",
+        msgTemplates : ["Tranx of","using Credit Card", "is made at", "on", "Avbl Cr lmt:", "Total Cr lmt:"],
+        attributtes : ["amount", "account","merchant", "date","availCrLimit","totalCrLimit"],
+        attrTypes : [ "INR" ,"cardnumber","alphanumeric","DATE","INR",""],
+        charsToRemove : ["","","",".",",","."]
+    };
     
- var converters = {
-     INR : function(currencyData) {
-        return toInrCurrency("INR",currencyData); 
-     },
-     
-     DATE :  toDate
- };
+    var drEcsTranSmsSpec = {
+        bank : "ICICI",
+        type : "DEBIT-ECS",
+        msgTemplates : ["Dear Customer, Your Ac","is debited with", "on", "Info.ECS*","Your Total Avbl. Bal is"],
+        attributtes : ["account", "amount","date", "merchant", "totalAvailable"],
+        attrTypes : [ "alphanumeric", "INR", "DDMON","alphanumeric","INR"],
+        charsToRemove : ["","",".",".","."]
+    };
+      
+    var drBillTranSmsSpec = {
+        bank : "ICICI",
+        type : "DEBIT-BILL",
+        msgTemplates : ["Dear Customer, Your Ac","is debited with", "on", "Info.BIL*","Your Total Avbl. Bal is"],
+        attributtes : ["account", "amount","date", "merchant", "totalAvailable"],
+        attrTypes : [ "alphanumeric", "INR", "DDMON","alphanumeric","INR"],
+        charsToRemove : ["","",".",".","."]
+    };
     
- smsReader.getConverter = function(attrType) {
-     return converters[attrType];
- };
+    var drCardTranSmsSpec = {
+        bank : "ICICI",
+        type : "DEBIT",
+        msgTemplates : ["Dear Customer, You have made a Debit Card purchase of","on", "Info.", "Your Net Available Balance is"],
+        attributtes : ["amount", "date","merchant", "netAvailable"],
+        attrTypes : [ "INR" ,"DDMON","alphanumeric","INR"],
+        charsToRemove : ["",".","",""]
+    };
     
+      
+    smsSpecs.push(crCardTranSmsSpec);
+    smsSpecs.push(drEcsTranSmsSpec);
+    smsSpecs.push(drBillTranSmsSpec);
+    smsSpecs.push(drCardTranSmsSpec);
+    return smsSpecs;   
+  };
     
- return smsReader;
- 
-})(smsReader || {}); 
+  var getAllowedSenderCodes = function(){
+  return [ { code: "ICICIB", name: "Icici Bank", bank: "ICICI"},
+           { code: "HDFCBK", name: "HDFC Bank", bank: "HDFC" }];
+  };
+  
+  var smsSpecsBySenderCode = _.groupBy(getSmsSpecs(), function(smsSpec) { return smsSpec.bank} );
+  var expSender = /([A-Z]){2}-[A-Z]{6}/;
+  var allowedSendersByCode = _.indexBy(getAllowedSenderCodes(),function(sender) {return sender.code});
+  
+  smsReader.getSenderToTrack = function(tranSms) {
+    var sender = tranSms.sender;
+    return (sender && sender.length==9 
+                   && expSender.test(sender) 
+                   && (allowedSendersByCode[sender.substr(3)] ));
+  };
+  
+  smsReader.getTranSmsSpecs = function(tranSms) {
+      var senderTracked = this.getSenderToTrack(tranSms);
+      if(senderTracked) {
+          var matchedTranSmsSpecs = smsSpecsBySenderCode[senderTracked.bank];
+          if(matchedTranSmsSpecs && matchedTranSmsSpecs.length > 0 ){
+             return matchedTranSmsSpecs; 
+          } else {
+             throw "no match sms specs found for sender " + tranSms.sender + " kindly check the configuration of sms specs for the sender" + senderTracked;
+          }
+      } else  {
+        throw "sms Sender: " + tranSms.sender + " cannot be tracked";
+      }    
+  };
+
+  return smsReader;
+  
+}(smsReader || {})); 
