@@ -6,7 +6,7 @@ smsReader.parse(tranCCSms, function(tranData) {
             console.log("inserted successfully");
         });}, function(err) { console.log(err); } );
 
-var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 30000.00 using Credit Card 4xxx1005 is made at HOTEL Anand on 12-JUL-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
+var tranCCSms = { sender : "AD-ICICIB", msg : "Tranx of INR 30000.00 using Credit Card 4xxx1004 is made at HOTEL Anand on 12-MAR-15. Avbl Cr lmt:INR 1,51,002.97, Total Cr lmt: INR XXXXX."};
 smsReader.parse(tranCCSms, function(tranData) {
         config.db.post(tranData, function(err, ok) {
             console.log("inserted successfully");
@@ -100,6 +100,18 @@ config.db(["_design/expenseTrackNew", "_view"])(["expenseBillRemainder", {descen
                   console.log("expenseTrackLists",expenseTrackListView);
             });
 
+// list the expense by account  (4xxx1005 replace with dynamic value of selected account )
+
+config.db(["_design/expenseTrackNew", "_view"])(["expenseTrackByAccount", {reduce : false,startkey : ['4xxx1005','á'], endkey : ['4xxx1005','z'] }], function(err, expenseTrackListView) {
+                console.log("expenseTrackLists",expenseTrackListView);
+          });
+  
+// list the expense by month 
+
+config.db(["_design/expenseTrackNew", "_view"])(["expenseTrackListsNew", {reduce : false,startkey : [2015,0,0], endkey : [2015,11,31] }], function(err, expenseTrackListView) {
+                console.log("expenseTrackLists",expenseTrackListView);
+          });
+         
 // group by account
                   
 config.db(["_design/expenseTrackNew", "_view"])(["expenseTrackByAccount", {group_level : 1}], function(err, expenseTrackListView) {
