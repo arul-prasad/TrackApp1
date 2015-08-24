@@ -32,7 +32,9 @@ angular.module('starter', ['ionic', 'starter.controllers'])
                 
                 expenseTrackByAccount : {
                     map : function(doc) {
-                        emit([doc.account,doc.merchant], { account:  doc.account, merchant: doc.merchant, amount: doc.amount.value, currency : doc.amount.currency});
+                        if (doc.trackType == "expense" && doc.account && doc.merchant) {
+                            emit([doc.account,doc.merchant], { account:  doc.account, merchant: doc.merchant, amount: doc.amount.value, currency : doc.amount.currency});
+                        }
                     }.toString(),
                     
                     reduce : function(keys,values,rereduce) {
@@ -49,7 +51,10 @@ angular.module('starter', ['ionic', 'starter.controllers'])
                 
                 expenseTrackByDate : {
                     map : function(doc) {
-                        emit([doc.date.year,doc.date.month,doc.date.date] , doc);
+                        if (doc.trackType == "expense" && doc.date && doc.date.year && doc.date.month && doc.date.date) {
+                            emit([doc.date.year,doc.date.month,doc.date.date] , doc);
+                        }
+                        
                     }.toString(), 
                     
                     reduce : function(keys,values,rereduce) {
@@ -63,6 +68,15 @@ angular.module('starter', ['ionic', 'starter.controllers'])
                         }
                         return response;
                     }.toString()
+                }, 
+                
+                expenseBillRemainder : {
+                    map : function(doc) {
+                        if (doc.trackType == "remainder" && doc.dueDate && doc.dueDate.year && doc.dueDate.month && doc.dueDate.date) {
+                            emit([doc.dueDate.year,doc.dueDate.month,doc.dueDate.date] , doc);
+                        }
+                        
+                    }.toString(), 
                 }
             }
         }, function(){
